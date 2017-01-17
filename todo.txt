@@ -1,0 +1,9 @@
+create a file with all the utilities for dealing with a color file
+create a file that actually uses the utilities
+
+1) get the number of masses
+2) update the SRC
+3) reformat the outfile
+4) run ParseBrownian
+5) run BrownianXMLtoTIFF
+6) Wrap it all 
