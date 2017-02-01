@@ -1,7 +1,5 @@
-def processFile(path, valid_colors):
+def getColorArray(path, valid_colors):
     f = open(path,'r')
-    #Need to get the mass colors to know what masses to write out
-    #The mass color array will tell us what lines from each time step to write out
     mass_color = []
     in_mass_color = False
     for line in f:
@@ -19,22 +17,38 @@ def processFile(path, valid_colors):
             except:
                 in_mass_color = False
                 break
-    print(mass_color)
-    #Now that we have the masscolors, need to write the some colors text file
+    f.close()
+    return mass_color
+
+def writeSRC(path,mass_color):
     file_name = path.split('/')[-1].split('.out')[0]
     base_path = '/'.join(path.split('/')[0:-1])+'/'
-    some_color_file = open(base_path+file_name+'_color.txt','a')
-    #write out the first n-1 4's with new lines, then have no new line at end of file
+    src_path = base_path+file_name+'_color.txt'
+    some_color_file = open(src_path,'a')
     for i in range(np.count_nonzero(mass_color)):
         some_color_file.write('4\n')
     some_color_file.close()
-    #Go back to the beginning of the file and start parsing it
-    f.seek(0)
+    return src_path
+
+def write
+
+
+def processFile(path, valid_colors):
+
+    #Need to get the mass colors to know what masses to write out
+    #The mass color array will tell us what lines from each time step to write out
+    mass_color = getColorArray(path,valid_colors)
+    #Now that we have the masscolors, need to write the some colors text file
+    src_path = writeSRC(path,mass_color)
     #Need to only write the time steps that have the valid colors
-    #Need to convert into microns
+    processed_path = processHeaderMicrons(path,mass_color)
+    return
+
+def processHeaderMicrons(path,mass_color):
     mass_counter = 0
     in_time_step = False
-    processed_file = open(base_path+file_name+'.txt','a')
+    processed_path = base_path+file_name+'.txt'
+    processed_file = open(processed_path,'a')
     if(len(mass_color)>0):
         for line in f:
             if line.startswith('Time'):
@@ -52,28 +66,7 @@ def processFile(path, valid_colors):
                     in_time_step = False
                     mass_counter = 0
     processed_file.close()
-    return
-
-def processHeaderMicrons(path):
-    f = open(path,'r')
-    file_name = path.split('/')[-1].split('.out')[0]
-    base_path = '/'.join(path.split('/')[0:-1])+'/'
-    #Need to convert into microns
-    in_time_step = False
-    processed_file = open(base_path+file_name+'.txt','a')
-    for line in f:
-        if line.startswith('Time'):
-            in_time_step = True
-            processed_file.write(line)
-            continue
-        if in_time_step:
-            try:
-                coordinates = line.strip().split(' ')
-                processed_file.write(str(1000000.*float(coordinates[0]))+' '+str(1000000.*float(coordinates[1]))+' '+str(1000000.*float(coordinates[2]))+'\n')
-            except:
-                processed_file.write(line)
-    processed_file.close()
-    return
+    return processed_path
 
 def convertColorFiles(file_name,number):
     for csv in os.listdir(file_name):
