@@ -7,9 +7,9 @@ def getColorArray(path,number):
     f = open(path,'r')
     mass_color = []
     for line in f:
-        if line=='4':
+        if '4' in line:
             mass_color.append(True)
-        if line=='0':
+        if '0' in line:
             mass_color.append(False)
     length = len(mass_color)
     for i in range(length,number):
@@ -22,8 +22,7 @@ def processHeaderMicrons(path,out_path,length):
     mass_counter = 0
     in_time_step = False
     file_name = path.split('/')[-1].split('.')[0]
-    processed_path = out_path+file_name+'.txt'
-    processed_file = open(processed_path,'a')
+    processed_file = open(out_path,'a')
     f = open(path,'r')
     if(length>0):
         for line in f:
@@ -42,7 +41,7 @@ def processHeaderMicrons(path,out_path,length):
                     mass_counter = 0
     processed_file.close()
     f.close()
-    return processed_path
+    return out_path
 
 #write out just the true elements of the array
 def processFile(path,color_path,out_path):
@@ -53,25 +52,27 @@ def processFile(path,color_path,out_path):
     processed_file = open(out_path,'a')
     input_file = open(path,'r')
     for line in input_file:
-        if line.startswith('Time') or len(line)<2:
+        if line.startswith('Time'):
             processed_file.write(line)
-            for i in range(len(mass_color)):
-                if(mass_color[i]):
-                    processed_file.write(input_file.readline())
+            for mass in mass_color:
+                coordinates = input_file.readline()
+                if mass:
+                    processed_file.write(line)
+        else:
+            processed_file.write(line)
     processed_file.close()
     input_file.close()
     return
 
 def convertColorFiles(file_name,out_path,number):
     for csv in os.listdir(file_name):
-        if fnmatch.fnmatch(file, '*.csv'):
-            with open(os.path.join([file_name,csv])) as csv_file:
-                out_file = open(os.path.join([out_path,csv.replace('.csv','.txt')]),'a')
-                mass_color = getColorArray(os.path.join([file_name,csv]),number)
-                for mass in mass_color:
-                    if mass:
-                        out_file.write('4'+'\n')
-                    if not mass:
-                        out_file.write('0'+'\n')
-                out_file.close()
+        with open(os.path.join(file_name,csv),'r') as csv_file:
+            out_file = open(os.path.join(out_path,csv.split('.')[0]+'.txt'),'a')
+            mass_color = getColorArray(os.path.join(file_name,csv),number)
+            for mass in mass_color:
+                if mass:
+                    out_file.write('4'+'\n')
+                if not mass:
+                    out_file.write('0'+'\n')
+            out_file.close()
     return
