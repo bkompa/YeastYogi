@@ -1,6 +1,5 @@
 import os
 import fnmatch
-import numpy as np
 
 #this needs to make the array of T/F
 def getColorArray(path,number):
@@ -16,6 +15,16 @@ def getColorArray(path,number):
         mass_color.append(False)
     assert(len(mass_color)==number)
     f.close()
+    return mass_color
+
+def getMassColor(path):
+    f = open(path,'r')
+    mass_color = []
+    for line in f:
+        if '4' in line:
+            mass_color.append(True)
+        if '0' in line:
+            mass_color.append(False)
     return mass_color
 
 def processHeaderMicrons(path,out_path,length):
@@ -42,27 +51,6 @@ def processHeaderMicrons(path,out_path,length):
     processed_file.close()
     f.close()
     return out_path
-
-#write out just the true elements of the array
-def processFile(path,color_path,out_path):
-    #Need to get the mass colors to know what masses to write out
-    #The mass color array will tell us what lines from each time step to write out
-    mass_color = getColorArray(path,color_path)
-    #Need to only write the time steps that have the valid colors
-    processed_file = open(out_path,'a')
-    input_file = open(path,'r')
-    for line in input_file:
-        if line.startswith('Time'):
-            processed_file.write(line)
-            for mass in mass_color:
-                coordinates = input_file.readline()
-                if mass:
-                    processed_file.write(line)
-        else:
-            processed_file.write(line)
-    processed_file.close()
-    input_file.close()
-    return
 
 def convertColorFiles(file_name,out_path,number):
     for csv in os.listdir(file_name):

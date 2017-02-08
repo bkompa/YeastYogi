@@ -126,7 +126,7 @@ def main( ) :
 
     # open up devnull for sending output of subprocesses we will cal to nothingness
     devnull = open( os.devnull )
-
+    print(params.input_folder,params.output_folder)
     for i in range( len( params.file_list ) ) :
         # how much we have processed?
         print( 'Processed {} out of {} files... {:.4f} seconds elapsed.'.format( i, 
@@ -139,6 +139,7 @@ def main( ) :
     # end loop through all the files
 
     print( 'Processed {0} out of {0} files...'.format( len( params.file_list ) ) )
+
     print( 'Processing complete!' )
     # do we need to rename the output?
     if params.rename :
