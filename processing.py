@@ -1,6 +1,7 @@
 import os
 import datetime
 import sys
+import shutil
 sys.path.insert(0,os.getcwd()+'/YeastYogi')
 from strechscript import *
 
@@ -69,23 +70,22 @@ for f in ['WT.out','no_cond.out']:
         out_path = os.path.join(coh_path,SRC.split('.')[0])
         SRC_path = os.path.join(COH_PATH_OUT,SRC)
         tiff_path = os.path.join(coh_path,SRC.split('.')[0]+'_tiff')
-        temp_file = os.path.join(condition_path,condition+'_'+SRC)
-        #processFile(file_path,SRC_path,temp_file)
-        try: 
-            if not os.path.isdir(out_path):
+        if not os.path.isdir(out_path):
+            try: 
                 os.mkdir(out_path)
-                print(out_path)
                 os.system("python {} -PSF {} -out {} -width 75 -height 75 -every 25 {} {}".format(os.path.join('YeastYogi','Brownian_to_fluorosim','ParseBrownian.py'),PSF_FILE,out_path,SRC_path,file_path))
-            if not os.path.isdir(tiff_path):
-                os.mkdir(tiff_path)
-                os.system("python {} -green -out {} {}".format(os.path.join('YeastYogi','Brownian_to_fluorosim','BrownianXMLtoTIFF.py'),tiff_path,out_path))
-        except:
-            try:
-                os.rmdir(out_path)
-                os.rmdir(tiff_path)
+            except (KeyboardInterrupt, SystemExit):
+                shutil.rmtree(out_path)
             except:
                 pass
-
+        if not os.path.isdir(tiff_path):
+            try:
+                os.mkdir(tiff_path)
+                os.system("python {} -green -out {} {}".format(os.path.join('YeastYogi','Brownian_to_fluorosim','BrownianXMLtoTIFF.py'),tiff_path,out_path))
+            except (KeyboardInterrupt, SystemExit):
+                shutil.rmtree(tiff_path)
+            except:
+                pass      
 for f in ['no_coh.out','no_coh_no_cond.out']:
     condition = f.split('.')[0]
     condition_path = os.path.join(YOGI_PATH,condition)
